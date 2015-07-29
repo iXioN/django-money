@@ -12,7 +12,11 @@ except ImportError:
         return value
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.admin.util import lookup_field
+try:
+    from django.contrib.admin.utils import lookup_field
+except ImportError:
+    # Django <= 1.6
+    from django.contrib.admin.util import lookup_field
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
 from django.db.models.fields.related import ManyToManyRel
@@ -22,7 +26,8 @@ def djmoney_contents(self):
     from django.contrib.admin.templatetags.admin_list import _boolean_icon
     from django.contrib.admin.views.main import EMPTY_CHANGELIST_VALUE
 
-    field, obj, model_admin = self.field['field'], self.form.instance, self.model_admin
+    field, obj, model_admin = self.field[
+        'field'], self.form.instance, self.model_admin
 
     try:
         f, attr, value = lookup_field(field, obj, model_admin)
